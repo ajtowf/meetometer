@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>meetometer</title>
+    <link href="Content/jquery.mobile-1.4.0.min.css" rel="stylesheet" />
+</head>
+<body ng-app="app">
+    <div data-role="page" ng-controller="meetingController">
+
+        <div data-role="header">
+            <h1>meetometer</h1>
+        </div>
+
+        <div role="main" class="ui-content">
+            <label for="peopleSlider">People in meeting:</label>
+            <input type="range" name="peopleSlider" id="peopleSlider" min="0" max="100" step="1" ng-model="people" slider-init>
+
+            <label for="avgSalary">Avg. salary:</label>
+            <input type="range" name="avgSalary" id="avgSalary" min="0" max="100000" step="1000" ng-model="avgSalary" slider-init>
+
+            <h1 style="text-align: center">
+                {{cost | currency:''}} SEK
+            </h1>
+
+            <div class="ui-grid-b ui-responsive">
+                <div class="ui-block-a">
+                    <button ng-disabled="running" ng-click="start()" class="ui-shadow ui-btn ui-corner-all">Start</button>
+                </div>
+                <div class="ui-block-b">
+                    <button ng-disabled="!running" ng-click="stop()" class="ui-shadow ui-btn ui-corner-all">Stop</button>
+                </div>
+                <div class="ui-block-c">
+                    <button ng-click="reset()" class="ui-shadow ui-btn ui-corner-all">Reset</button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script src="Scripts/jquery-1.10.2.min.js"></script>
+    <script src="Scripts/jquery.mobile-1.4.0.min.js"></script>
+    <script src="Scripts/amplify.min.js"></script>
+    <script src="Scripts/angular.min.js"></script>
+
+    <script src="App/app.min.js"></script>
+</body>
+</html>
