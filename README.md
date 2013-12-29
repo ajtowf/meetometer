@@ -8,14 +8,14 @@ Created during a live coding sessions, see blog post or youtube link.
 
 ## Links
 
-Live demo @ http://meetometer.azurewebsites.net/
-Youtube   @ http://www.youtube.com/watch?v=WrxKLoj4QFc
-Blog post @ http://ajden.towfeek.se/post/2013/12/29/LiveCodingSessionHtmlAppPrototypeVS2013AzureAngularJSjQueryMobile.aspx
+- Live demo @ http://meetometer.azurewebsites.net/
+- Youtube   @ http://youtu.be/WrxKLoj4QFc
+- Blog post @ http://bit.ly/1ahgnLf
 
 ## Roadmap
 
-Implement server-side solution to persist meeting sessions. (WebApi 2 + EntityFramework 6)
-Make site multi-tenant, create local accounts, auth with facebook/google/twitter.
+- Implement server-side solution to persist meeting sessions. (WebApi 2 + EntityFramework 6)
+- Make site multi-tenant, create local accounts, auth with facebook/google/twitter.
 
 ## License
 
