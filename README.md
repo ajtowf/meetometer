@@ -9,8 +9,7 @@ Created during a live coding sessions, see blog post or youtube link.
 ## Links
 
 - Live demo @ http://meetometer.azurewebsites.net/
-- Youtube   @ http://youtu.be/WrxKLoj4QFc
-- Blog post @ http://bit.ly/1ahgnLf
+- Dev serie @ http://ajden.towfeek.se/page/LiveCodingSessionsMeetometer.aspx
 
 ## Roadmap
 

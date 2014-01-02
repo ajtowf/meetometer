@@ -57,10 +57,10 @@ var meetometer;
             $scope.avgSalary = settings.avgSalary;
 
             $scope.$watch("people", function () {
-                return _this.saveSettings;
+                return _this.saveSettings();
             });
             $scope.$watch("avgSalary", function () {
-                return _this.saveSettings;
+                return _this.saveSettings();
             });
 
             $scope.running = false;

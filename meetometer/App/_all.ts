@@ -4,7 +4,7 @@
 /// <reference path="../scripts/typings/jquerymobile/jquerymobile.d.ts" />
 
 /// <reference path="interfaces/imeetingscope.ts" />
-/// <reference path="interfaces/istorageinterface.ts" />
+/// <reference path="interfaces/istorageservice.ts" />
 
 /// <reference path="models.ts" />
 /// <reference path="storageservice.ts" />

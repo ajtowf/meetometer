@@ -19,8 +19,8 @@ module meetometer {
             $scope.people = settings.people;
             $scope.avgSalary = settings.avgSalary;
 
-            $scope.$watch("people", () => this.saveSettings);
-            $scope.$watch("avgSalary", () => this.saveSettings);
+            $scope.$watch("people", () => this.saveSettings());
+            $scope.$watch("avgSalary", () => this.saveSettings());
 
             $scope.running = false;
             $scope.cost = 0;

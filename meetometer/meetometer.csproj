@@ -311,7 +311,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="App\directives.ts" />
     <TypeScriptCompile Include="App\interfaces\IMeetingScope.ts" />
-    <TypeScriptCompile Include="App\interfaces\IStorageInterface.ts" />
+    <TypeScriptCompile Include="App\interfaces\IStorageService.ts" />
     <TypeScriptCompile Include="App\main.ts" />
     <TypeScriptCompile Include="App\meetingController.ts" />
     <TypeScriptCompile Include="App\models.ts" />
