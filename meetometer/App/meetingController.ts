@@ -19,11 +19,15 @@ module meetometer {
             $scope.people = settings.people;
             $scope.avgSalary = settings.avgSalary;
 
+            $scope.meetings = storageService.getMeetings();
+            $scope.$watch("meetings", () => this.saveMeetings(), true);
+
             $scope.$watch("people", () => this.saveSettings());
             $scope.$watch("avgSalary", () => this.saveSettings());
 
             $scope.running = false;
             $scope.cost = 0;
+            $scope.duration = 0;
 
             $scope.vm = this;
         }
@@ -33,15 +37,20 @@ module meetometer {
                 new settingsModel(this.$scope.people, this.$scope.avgSalary));
         }
 
-        calcCost() {
-            return (this.$scope.people * this.$scope.avgSalary) / (176 * 60 * 60);
+        saveMeetings() {
+            this.storageService.saveMeetings(this.$scope.meetings);
+        }
+
+        calcCost(ppl: number, avgSalary: number, seconds: number) {
+            return seconds * (ppl * avgSalary) / (176 * 60 * 60);
         }
 
         tick() {
             var self = this;
             this.cancelPromise = this.$timeout(function work() {
-                self.$scope.cost += self.calcCost();
+                self.$scope.cost += self.calcCost(self.$scope.people, self.$scope.avgSalary, 1);
                 self.cancelPromise = self.$timeout(work, 1000);
+                self.$scope.duration++;
             }, 1000);
         }
 
@@ -57,6 +66,26 @@ module meetometer {
 
         reset() {
             this.$scope.cost = 0;
+            this.$scope.duration = 0;
+        }
+
+        storeCurrentMeeting() {
+            if (this.$scope.running) {
+                this.stop();
+            }
+
+            // post /api/meetings
+            this.$scope.meetings.push(
+                new meetingModel(0, new Date(), this.$scope.people, this.$scope.avgSalary, this.$scope.duration));
+
+            this.reset();
+        }
+
+        deleteMeeting(meetingToDelete: meetingModel) {
+            var index = this.$scope.meetings.indexOf(meetingToDelete);
+            if (index > -1) {
+                this.$scope.meetings.splice(index, 1);
+            }
         }
     }
 }

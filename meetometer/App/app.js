@@ -12,6 +12,18 @@ var meetometer;
         return settingsModel;
     })();
     meetometer.settingsModel = settingsModel;
+
+    var meetingModel = (function () {
+        function meetingModel(id, date, people, avgSalary, durationSeconds) {
+            this.id = id;
+            this.date = date;
+            this.people = people;
+            this.avgSalary = avgSalary;
+            this.durationSeconds = durationSeconds;
+        }
+        return meetingModel;
+    })();
+    meetometer.meetingModel = meetingModel;
 })(meetometer || (meetometer = {}));
 //# sourceMappingURL=models.js.map
 
@@ -56,6 +68,11 @@ var meetometer;
             $scope.people = settings.people;
             $scope.avgSalary = settings.avgSalary;
 
+            $scope.meetings = storageService.getMeetings();
+            $scope.$watch("meetings", function () {
+                return _this.saveMeetings();
+            }, true);
+
             $scope.$watch("people", function () {
                 return _this.saveSettings();
             });
@@ -65,6 +82,7 @@ var meetometer;
 
             $scope.running = false;
             $scope.cost = 0;
+            $scope.duration = 0;
 
             $scope.vm = this;
         }
@@ -72,15 +90,20 @@ var meetometer;
             this.storageService.saveSettings(new meetometer.settingsModel(this.$scope.people, this.$scope.avgSalary));
         };
 
-        meetingController.prototype.calcCost = function () {
-            return (this.$scope.people * this.$scope.avgSalary) / (176 * 60 * 60);
+        meetingController.prototype.saveMeetings = function () {
+            this.storageService.saveMeetings(this.$scope.meetings);
+        };
+
+        meetingController.prototype.calcCost = function (ppl, avgSalary, seconds) {
+            return seconds * (ppl * avgSalary) / (176 * 60 * 60);
         };
 
         meetingController.prototype.tick = function () {
             var self = this;
             this.cancelPromise = this.$timeout(function work() {
-                self.$scope.cost += self.calcCost();
+                self.$scope.cost += self.calcCost(self.$scope.people, self.$scope.avgSalary, 1);
                 self.cancelPromise = self.$timeout(work, 1000);
+                self.$scope.duration++;
             }, 1000);
         };
 
@@ -96,6 +119,25 @@ var meetometer;
 
         meetingController.prototype.reset = function () {
             this.$scope.cost = 0;
+            this.$scope.duration = 0;
+        };
+
+        meetingController.prototype.storeCurrentMeeting = function () {
+            if (this.$scope.running) {
+                this.stop();
+            }
+
+            // post /api/meetings
+            this.$scope.meetings.push(new meetometer.meetingModel(0, new Date(), this.$scope.people, this.$scope.avgSalary, this.$scope.duration));
+
+            this.reset();
+        };
+
+        meetingController.prototype.deleteMeeting = function (meetingToDelete) {
+            var index = this.$scope.meetings.indexOf(meetingToDelete);
+            if (index > -1) {
+                this.$scope.meetings.splice(index, 1);
+            }
         };
         meetingController.$inject = ["$scope", "$timeout", "storageService"];
         return meetingController;
@@ -113,6 +155,7 @@ var meetometer;
     var storageService = (function () {
         function storageService() {
             this.meetometerSettingsKey = "meetometerSettingsKey";
+            this.meetometerMeetometerKey = "meetometerMeetometerKey";
         }
         storageService.prototype.getSettings = function () {
             var settings = amplify.store(this.meetometerSettingsKey);
@@ -125,6 +168,22 @@ var meetometer;
 
         storageService.prototype.saveSettings = function (settings) {
             amplify.store(this.meetometerSettingsKey, settings);
+        };
+
+        storageService.prototype.getMeetings = function () {
+            var meetings = amplify.store(this.meetometerMeetometerKey);
+            if (!meetings) {
+                meetings = [
+                    new meetometer.meetingModel(1, new Date(), 5, 45000, 60 * 45),
+                    new meetometer.meetingModel(2, new Date(), 20, 30000, 60 * 30)
+                ];
+            }
+
+            return meetings;
+        };
+
+        storageService.prototype.saveMeetings = function (meetings) {
+            amplify.store(this.meetometerMeetometerKey, meetings);
         };
         return storageService;
     })();

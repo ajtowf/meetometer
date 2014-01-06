@@ -6,5 +6,8 @@ module meetometer {
     export interface IStorageService {
         getSettings(): settingsModel;
         saveSettings(settings: settingsModel);
+
+        getMeetings(): meetingModel[];
+        saveMeetings(meetings: meetingModel[]);
     }
 } 

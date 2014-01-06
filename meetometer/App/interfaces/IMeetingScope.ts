@@ -8,6 +8,9 @@ module meetometer {
         avgSalary: number;
         running: boolean;
         cost: number;
+        duration: number;
+
+        meetings: meetingModel[];
 
         vm: meetingController;
     }

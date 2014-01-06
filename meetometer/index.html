@@ -23,7 +23,7 @@
                 {{cost | currency:''}} SEK
             </h1>
 
-            <div class="ui-grid-b ui-responsive">
+            <div class="ui-grid-c ui-responsive">
                 <div class="ui-block-a">
                     <button ng-disabled="running" ng-click="vm.start()" class="ui-shadow ui-btn ui-corner-all">Start</button>
                 </div>
@@ -31,21 +31,32 @@
                     <button ng-disabled="!running" ng-click="vm.stop()" class="ui-shadow ui-btn ui-corner-all">Stop</button>
                 </div>
                 <div class="ui-block-c">
-                    <button ng-click="vm.reset()" class="ui-shadow ui-btn ui-corner-all">Reset</button>
+                    <button ng-disabled="duration == 0" ng-click="vm.reset()" class="ui-shadow ui-btn ui-corner-all">Reset</button>
+                </div>
+                 <div class="ui-block-d">
+                    <button ng-disabled="duration == 0" ng-click="vm.storeCurrentMeeting()" class="ui-shadow ui-btn ui-corner-all">Store</button>
                 </div>
             </div>
+
+            <ul data-role="listview" data-split-icon="delete" data-split-theme="a" data-inset="true">
+                <li ng-repeat="m in meetings track by $index | orderBy:'-date'">
+                    <a href="#">
+                        <h2>{{m.date | date:'yyyy-MM-dd HH:mm'}} {{vm.calcCost(m.people, m.avgSalary, m.durationSeconds) | currency:''}} SEK</h2>
+                        <p>{{m.people}} persons for {{m.durationSeconds > 59 ? (m.durationSeconds / 60) + ' minutes' : m.durationSeconds + ' seconds'}}</p>
+                    </a>
+                    <a ng-click="vm.deleteMeeting(m)">delete</a>
+                </li>
+            </ul>
         </div>
-
-
     </div>
 
     <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="//code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/amplifyjs/1.1.0/amplify.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.js"></script>
 
     <script src="App/app.min.js"></script>
-
+    
     <script type="text/javascript">
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-46765267-1']);
