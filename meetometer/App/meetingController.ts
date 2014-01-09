@@ -5,7 +5,7 @@ module meetometer {
 
     export class meetingController {
 
-        private cancelPromise: any;
+        private cancelPromise: ng.IPromise<any>;
 
         public static $inject = ["$scope", "$timeout", "storageService"];
 
@@ -42,16 +42,19 @@ module meetometer {
         }
 
         calcCost(ppl: number, avgSalary: number, seconds: number) {
-            return seconds * (ppl * avgSalary) / (176 * 60 * 60);
+            // Mandatory social taxes company must pay for employees are 31.42%
+            return 1.3142 * seconds * (ppl * avgSalary) / (176 * 60 * 60);
         }
 
         tick() {
-            var self = this;
-            this.cancelPromise = this.$timeout(function work() {
-                self.$scope.cost += self.calcCost(self.$scope.people, self.$scope.avgSalary, 1);
-                self.cancelPromise = self.$timeout(work, 1000);
-                self.$scope.duration++;
-            }, 1000);
+            var work = () => {
+                this.$scope.cost += this.calcCost(this.$scope.people, this.$scope.avgSalary, 1);
+                this.$scope.duration++;
+
+                this.cancelPromise = this.$timeout(work, 1000);
+            };
+
+            this.cancelPromise = this.$timeout(work, 1000);
         }
 
         start() {

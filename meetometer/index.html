@@ -42,7 +42,7 @@
                 <li ng-repeat="m in meetings track by $index | orderBy:'-date'">
                     <a href="#">
                         <h2>{{m.date | date:'yyyy-MM-dd HH:mm'}} {{vm.calcCost(m.people, m.avgSalary, m.durationSeconds) | currency:''}} SEK</h2>
-                        <p>{{m.people}} persons for {{m.durationSeconds > 59 ? (m.durationSeconds / 60) + ' minutes' : m.durationSeconds + ' seconds'}}</p>
+                        <p>{{m.people}} persons for {{m.durationSeconds > 59 ? (m.durationSeconds / 60).toFixed(0) + ' minutes' : m.durationSeconds + ' seconds'}}</p>
                     </a>
                     <a ng-click="vm.deleteMeeting(m)">delete</a>
                 </li>

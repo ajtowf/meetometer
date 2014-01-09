@@ -95,16 +95,20 @@ var meetometer;
         };
 
         meetingController.prototype.calcCost = function (ppl, avgSalary, seconds) {
-            return seconds * (ppl * avgSalary) / (176 * 60 * 60);
+            // Mandatory social taxes company must pay for employees are 31.42%
+            return 1.3142 * seconds * (ppl * avgSalary) / (176 * 60 * 60);
         };
 
         meetingController.prototype.tick = function () {
-            var self = this;
-            this.cancelPromise = this.$timeout(function work() {
-                self.$scope.cost += self.calcCost(self.$scope.people, self.$scope.avgSalary, 1);
-                self.cancelPromise = self.$timeout(work, 1000);
-                self.$scope.duration++;
-            }, 1000);
+            var _this = this;
+            var work = function () {
+                _this.$scope.cost += _this.calcCost(_this.$scope.people, _this.$scope.avgSalary, 1);
+                _this.$scope.duration++;
+
+                _this.cancelPromise = _this.$timeout(work, 1000);
+            };
+
+            this.cancelPromise = this.$timeout(work, 1000);
         };
 
         meetingController.prototype.start = function () {
