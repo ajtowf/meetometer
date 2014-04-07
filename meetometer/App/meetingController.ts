@@ -7,10 +7,11 @@ module meetometer {
 
         private cancelPromise: ng.IPromise<any>;
 
-        public static $inject = ["$scope", "$timeout", "storageService"];
+        public static $inject = ["$scope", "$http", "$timeout", "storageService"];
 
         constructor(
             private $scope: IMeetingScope,
+            private $http: ng.IHttpService,
             private $timeout: ng.ITimeoutService,
             private storageService: IStorageService) {
 
@@ -18,9 +19,13 @@ module meetometer {
 
             $scope.people = settings.people;
             $scope.avgSalary = settings.avgSalary;
-
             $scope.meetings = storageService.getMeetings();
+
             $scope.$watch("meetings", () => this.saveMeetings(), true);
+
+            $http.get("/api/meetings").success((data) => {
+                $scope.meetings = data;
+            });
 
             $scope.$watch("people", () => this.saveSettings());
             $scope.$watch("avgSalary", () => this.saveSettings());
@@ -78,8 +83,11 @@ module meetometer {
             }
 
             // post /api/meetings
-            this.$scope.meetings.push(
-                new meetingModel(0, new Date(), this.$scope.people, this.$scope.avgSalary, this.$scope.duration));
+            var meetingToStore =
+                new meetingModel(0, new Date(), this.$scope.people, this.$scope.avgSalary, this.$scope.duration);
+            this.$http.post("/api/meetings", meetingToStore).success((data) => {
+                this.$scope.meetings.push(data);
+            });            
 
             this.reset();
         }
@@ -87,7 +95,9 @@ module meetometer {
         deleteMeeting(meetingToDelete: meetingModel) {
             var index = this.$scope.meetings.indexOf(meetingToDelete);
             if (index > -1) {
-                this.$scope.meetings.splice(index, 1);
+                this.$http.delete("/api/meetings?id=" + meetingToDelete.id).success(() => {
+                    this.$scope.meetings.splice(index, 1);
+                });
             }
         }
     }
