@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Web.Http;
+using meetometer.Migrations;
+using meetometer.Repository;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -16,6 +19,9 @@ namespace meetometer
             var settings = jsonFormatter.SerializerSettings;
             settings.Formatting = Formatting.Indented;
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            Database.SetInitializer(
+                new MigrateDatabaseToLatestVersion<AppDbContext, Configuration>()); 
         }
     }
 }
