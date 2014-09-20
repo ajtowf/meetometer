@@ -58,20 +58,25 @@ var meetometer;
     'use strict';
 
     var meetingController = (function () {
-        function meetingController($scope, $timeout, storageService) {
+        function meetingController($scope, $http, $timeout, storageService) {
             var _this = this;
             this.$scope = $scope;
+            this.$http = $http;
             this.$timeout = $timeout;
             this.storageService = storageService;
             var settings = storageService.getSettings();
 
             $scope.people = settings.people;
             $scope.avgSalary = settings.avgSalary;
-
             $scope.meetings = storageService.getMeetings();
+
             $scope.$watch("meetings", function () {
                 return _this.saveMeetings();
             }, true);
+
+            $http.get("/api/meetings").success(function (data) {
+                $scope.meetings = data;
+            });
 
             $scope.$watch("people", function () {
                 return _this.saveSettings();
@@ -127,23 +132,30 @@ var meetometer;
         };
 
         meetingController.prototype.storeCurrentMeeting = function () {
+            var _this = this;
             if (this.$scope.running) {
                 this.stop();
             }
 
             // post /api/meetings
-            this.$scope.meetings.push(new meetometer.meetingModel(0, new Date(), this.$scope.people, this.$scope.avgSalary, this.$scope.duration));
+            var meetingToStore = new meetometer.meetingModel(0, new Date(), this.$scope.people, this.$scope.avgSalary, this.$scope.duration);
+            this.$http.post("/api/meetings", meetingToStore).success(function (data) {
+                _this.$scope.meetings.push(data);
+            });
 
             this.reset();
         };
 
         meetingController.prototype.deleteMeeting = function (meetingToDelete) {
+            var _this = this;
             var index = this.$scope.meetings.indexOf(meetingToDelete);
             if (index > -1) {
-                this.$scope.meetings.splice(index, 1);
+                this.$http.delete("/api/meetings?id=" + meetingToDelete.id).success(function () {
+                    _this.$scope.meetings.splice(index, 1);
+                });
             }
         };
-        meetingController.$inject = ["$scope", "$timeout", "storageService"];
+        meetingController.$inject = ["$scope", "$http", "$timeout", "storageService"];
         return meetingController;
     })();
     meetometer.meetingController = meetingController;
@@ -204,3 +216,4 @@ var meetometer;
     angular.module("app", []).directive("sliderInit", meetometer.sliderInitDirective).service("storageService", meetometer.storageService).controller("meetingController", meetometer.meetingController);
 })(meetometer || (meetometer = {}));
 //# sourceMappingURL=main.js.map
+
