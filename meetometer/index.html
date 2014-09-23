@@ -7,9 +7,25 @@
 </head>
 <body ng-app="app">
     <div data-role="page" ng-controller="meetingController">
+        <div data-role="popup" id="popupLogin" data-theme="a" class="ui-corner-all">
+            <form>
+                <div style="padding:10px 20px;">
+                    <span style="color: #ff0000">{{loginErrorMessage}}</span>
+                    <h3>Please sign in</h3>
+                    <label for="un" class="ui-hidden-accessible">Username:</label>
+                    <input type="text" name="user" id="un" ng-model="username" placeholder="username" data-theme="a">
+                    <label for="pw" class="ui-hidden-accessible">Password:</label>
+                    <input type="password" name="pass" id="pw" ng-model="password" placeholder="password" data-theme="a">
+                    <button ng-click="vm.login()" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Sign in</button>
+                </div>
+            </form>
+        </div>
+
 
         <div data-role="header">
             <h1>meetometer</h1>
+            <a href="#popupLogin" ng-show="!authentication.isAuthorized" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-a ui-btn-right" data-transition="pop">Sign in</a>
+            <a ng-click="vm.logout()" ng-show="authentication.isAuthorized" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-a ui-btn-right">Sign out</a>
         </div>
 
         <div role="main" class="ui-content">
@@ -33,7 +49,7 @@
                 <div class="ui-block-c">
                     <button ng-disabled="duration == 0" ng-click="vm.reset()" class="ui-shadow ui-btn ui-corner-all">Reset</button>
                 </div>
-                 <div class="ui-block-d">
+                <div class="ui-block-d">
                     <button ng-disabled="duration == 0" ng-click="vm.storeCurrentMeeting()" class="ui-shadow ui-btn ui-corner-all">Store</button>
                 </div>
             </div>
@@ -56,7 +72,15 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.js"></script>
 
     <script src="App/app.min.js"></script>
-    
+
+    <!--<script src="App/directives.js"></script>
+    <script src="App/models.js"></script>
+    <script src="App/authService.js"></script>
+    <script src="App/authInterceptor.js"></script>
+    <script src="App/storageService.js"></script>
+    <script src="App/meetingController.js"></script>
+    <script src="App/main.js"></script>-->
+
     <script type="text/javascript">
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-46765267-1']);

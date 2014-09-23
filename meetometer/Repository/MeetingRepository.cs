@@ -6,7 +6,8 @@ namespace meetometer.Repository
 {
     public interface IMeetingRepository
     {
-        IEnumerable<Meeting> GetAll();
+        Meeting GetById(int id);
+        IEnumerable<Meeting> GetAll(string userId);
         Meeting SaveOrUpdate(Meeting meeting);
         bool Delete(int id);
     }
@@ -15,9 +16,14 @@ namespace meetometer.Repository
     {
         private AppDbContext db = new AppDbContext();
 
-        public IEnumerable<Meeting> GetAll()
+        public Meeting GetById(int id)
         {
-            return db.Meetings;
+            return db.Meetings.FirstOrDefault(x => x.Id == id);
+        }
+
+        public IEnumerable<Meeting> GetAll(string userId)
+        {
+            return db.Meetings.Where(x => x.UserId == userId);
         }
 
         public Meeting SaveOrUpdate(Meeting meeting)
@@ -29,6 +35,7 @@ namespace meetometer.Repository
                 db.Meetings.Add(entity);
             }
 
+            entity.UserId = meeting.UserId;
             entity.People = meeting.People;
             entity.AvgSalary = meeting.AvgSalary;
             entity.Date = meeting.Date;

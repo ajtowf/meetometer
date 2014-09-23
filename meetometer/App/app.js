@@ -4,6 +4,15 @@ var meetometer;
 (function (meetometer) {
     'use strict';
 
+    var authSettingsModel = (function () {
+        function authSettingsModel(isAuthorized, token) {
+            this.isAuthorized = isAuthorized;
+            this.token = token;
+        }
+        return authSettingsModel;
+    })();
+    meetometer.authSettingsModel = authSettingsModel;
+
     var settingsModel = (function () {
         function settingsModel(people, avgSalary) {
             this.people = people;
@@ -51,6 +60,85 @@ var meetometer;
 })(meetometer || (meetometer = {}));
 //# sourceMappingURL=directives.js.map
 
+///#source 1 1 /App/authService.js
+/// <reference path="_all.ts" />
+var meetometer;
+(function (meetometer) {
+    'use strict';
+    function authService(storageService, $http, $q) {
+        var _authData = storageService.getAuthSettings();
+
+        var _authentication = {
+            isAuthorized: _authData.isAuthorized,
+            token: _authData.token
+        };
+
+        var _logout = function () {
+            _authentication.isAuthorized = false;
+            _authentication.token = "";
+            storageService.saveAuthSettings(new meetometer.authSettingsModel(false, ""));
+        };
+
+        var _login = function (username, password) {
+            var data = "grant_type=password&username=" + username + "&password=" + password;
+
+            var defered = $q.defer();
+
+            $http.post("/Token", data, { header: { 'Content-Type': 'x-www-form-urlencoded' } }).success(function (response) {
+                _authentication.isAuthorized = true;
+                _authentication.token = response.access_token;
+                storageService.saveAuthSettings(new meetometer.authSettingsModel(true, response.access_token));
+                defered.resolve(response);
+            }).error(function (error) {
+                defered.reject(error);
+            });
+
+            return defered.promise;
+        };
+
+        return {
+            authentication: _authentication,
+            login: _login,
+            logout: _logout
+        };
+    }
+    meetometer.authService = authService;
+})(meetometer || (meetometer = {}));
+//# sourceMappingURL=authService.js.map
+
+///#source 1 1 /App/authInterceptor.js
+/// <reference path="_all.ts" />
+var meetometer;
+(function (meetometer) {
+    'use strict';
+    function authInterceptor(storageService, $q, $injector) {
+        var _request = function (config) {
+            var authSettings = storageService.getAuthSettings();
+            if (authSettings.isAuthorized) {
+                config.headers['Authorization'] = 'Bearer ' + authSettings.token;
+            }
+
+            return config;
+        };
+
+        var _responseError = function (rejection) {
+            if (rejection.status == 401) {
+                var authService = $injector.get("authService");
+                authService.logout();
+            }
+
+            return $q.reject(rejection);
+        };
+
+        return {
+            request: _request,
+            responseError: _responseError
+        };
+    }
+    meetometer.authInterceptor = authInterceptor;
+})(meetometer || (meetometer = {}));
+//# sourceMappingURL=authInterceptor.js.map
+
 ///#source 1 1 /App/meetingController.js
 /// <reference path="_all.ts" />
 var meetometer;
@@ -58,13 +146,20 @@ var meetometer;
     'use strict';
 
     var meetingController = (function () {
-        function meetingController($scope, $http, $timeout, storageService) {
+        function meetingController($scope, $http, $timeout, storageService, authService) {
             var _this = this;
             this.$scope = $scope;
             this.$http = $http;
             this.$timeout = $timeout;
             this.storageService = storageService;
+            this.authService = authService;
             var settings = storageService.getSettings();
+
+            $scope.authentication = authService.authentication;
+
+            $scope.loginErrorMessage = "";
+            $scope.username = "test";
+            $scope.password = "test123test!";
 
             $scope.people = settings.people;
             $scope.avgSalary = settings.avgSalary;
@@ -74,9 +169,9 @@ var meetometer;
                 return _this.saveMeetings();
             }, true);
 
-            $http.get("/api/meetings").success(function (data) {
-                $scope.meetings = data;
-            });
+            if ($scope.authentication.isAuthorized) {
+                this.getMettings();
+            }
 
             $scope.$watch("people", function () {
                 return _this.saveSettings();
@@ -91,6 +186,30 @@ var meetometer;
 
             $scope.vm = this;
         }
+        meetingController.prototype.getMettings = function () {
+            var _this = this;
+            this.$http.get("/api/meetings").success(function (data) {
+                _this.$scope.meetings = data;
+            });
+        };
+
+        meetingController.prototype.logout = function () {
+            this.authService.logout();
+        };
+
+        meetingController.prototype.login = function () {
+            var _self = this;
+
+            // do the login
+            this.authService.login(this.$scope.username, this.$scope.password).then(function (response) {
+                _self.getMettings();
+                _self.$scope.loginErrorMessage = "";
+                $("#popupLogin").popup("close");
+            }, function (response) {
+                _self.$scope.loginErrorMessage = "Failed to login";
+            });
+        };
+
         meetingController.prototype.saveSettings = function () {
             this.storageService.saveSettings(new meetometer.settingsModel(this.$scope.people, this.$scope.avgSalary));
         };
@@ -155,7 +274,7 @@ var meetometer;
                 });
             }
         };
-        meetingController.$inject = ["$scope", "$http", "$timeout", "storageService"];
+        meetingController.$inject = ["$scope", "$http", "$timeout", "storageService", "authService"];
         return meetingController;
     })();
     meetometer.meetingController = meetingController;
@@ -170,9 +289,23 @@ var meetometer;
 
     var storageService = (function () {
         function storageService() {
+            this.meetometerAuthSettingsKey = "meetometerAuthSettingsKey";
             this.meetometerSettingsKey = "meetometerSettingsKey";
             this.meetometerMeetometerKey = "meetometerMeetometerKey";
         }
+        storageService.prototype.getAuthSettings = function () {
+            var settings = amplify.store(this.meetometerAuthSettingsKey);
+            if (!settings) {
+                settings = new meetometer.authSettingsModel(false, "");
+            }
+
+            return settings;
+        };
+
+        storageService.prototype.saveAuthSettings = function (settings) {
+            amplify.store(this.meetometerAuthSettingsKey, settings);
+        };
+
         storageService.prototype.getSettings = function () {
             var settings = amplify.store(this.meetometerSettingsKey);
             if (!settings) {
@@ -213,7 +346,10 @@ var meetometer;
 (function (meetometer) {
     'use strict';
 
-    angular.module("app", []).directive("sliderInit", meetometer.sliderInitDirective).service("storageService", meetometer.storageService).controller("meetingController", meetometer.meetingController);
+    angular.module("app", []).directive("sliderInit", meetometer.sliderInitDirective).factory("authService", ["storageService", "$http", "$q", meetometer.authService]).factory("authInterceptor", ["storageService", "$q", "$injector", meetometer.authInterceptor]).service("storageService", meetometer.storageService).controller("meetingController", meetometer.meetingController).config([
+        '$httpProvider', function ($httpProvider) {
+            $httpProvider.interceptors.push('authInterceptor');
+        }]);
 })(meetometer || (meetometer = {}));
 //# sourceMappingURL=main.js.map
 

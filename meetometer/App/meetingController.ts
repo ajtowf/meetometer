@@ -7,15 +7,22 @@ module meetometer {
 
         private cancelPromise: ng.IPromise<any>;
 
-        public static $inject = ["$scope", "$http", "$timeout", "storageService"];
+        public static $inject = ["$scope", "$http", "$timeout", "storageService", "authService"];
 
         constructor(
             private $scope: IMeetingScope,
             private $http: ng.IHttpService,
             private $timeout: ng.ITimeoutService,
-            private storageService: IStorageService) {
+            private storageService: IStorageService,
+            private authService: any) {
 
             var settings = storageService.getSettings();
+
+            $scope.authentication = authService.authentication;
+
+            $scope.loginErrorMessage = "";
+            $scope.username = "test";
+            $scope.password = "test123test!";
 
             $scope.people = settings.people;
             $scope.avgSalary = settings.avgSalary;
@@ -23,10 +30,10 @@ module meetometer {
 
             $scope.$watch("meetings", () => this.saveMeetings(), true);
 
-            $http.get("/api/meetings").success((data) => {
-                $scope.meetings = data;
-            });
-
+            if ($scope.authentication.isAuthorized) {
+                this.getMettings();
+            }
+            
             $scope.$watch("people", () => this.saveSettings());
             $scope.$watch("avgSalary", () => this.saveSettings());
 
@@ -35,6 +42,32 @@ module meetometer {
             $scope.duration = 0;
 
             $scope.vm = this;
+        }
+
+        getMettings() {
+            this.$http.get("/api/meetings").success((data) => {
+                this.$scope.meetings = data;
+            });
+        }
+
+        logout() {
+            this.authService.logout();
+        }
+
+        login() {
+            var _self = this;
+            // do the login
+            this.authService.login(
+                this.$scope.username,
+                this.$scope.password)
+                .then(function (response) {
+                    _self.getMettings();
+                    _self.$scope.loginErrorMessage = "";
+                    $("#popupLogin").popup("close");
+                },
+                function (response) {
+                    _self.$scope.loginErrorMessage = "Failed to login";
+                });
         }
 
         saveSettings() {

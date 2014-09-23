@@ -16,7 +16,9 @@ namespace meetometer
         public void Configuration(IAppBuilder app)
         {
             var config = new HttpConfiguration();
-                                    
+                                  
+            ConfigureAuth(app);
+
             WebApiConfig.Register(config);
             app.UseWebApi(config);
 

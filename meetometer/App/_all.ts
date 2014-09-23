@@ -6,6 +6,8 @@
 /// <reference path="interfaces/imeetingscope.ts" />
 /// <reference path="interfaces/istorageservice.ts" />
 
+/// <reference path="authservice.ts" />
+/// <reference path="authinterceptor.ts" />
 /// <reference path="models.ts" />
 /// <reference path="storageservice.ts" />
 /// <reference path="meetingcontroller.ts" />

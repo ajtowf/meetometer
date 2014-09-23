@@ -12,6 +12,8 @@
   <files>
     <file>/App/models.js</file>
     <file>/App/directives.js</file>
+    <file>/App/authService.js</file>
+    <file>/App/authInterceptor.js</file>
     <file>/App/meetingController.js</file>
     <file>/App/storageService.js</file>
     <file>/App/main.js</file>

@@ -3,6 +3,10 @@
 module meetometer {
     'use strict';
 
+    export class authSettingsModel {
+        constructor(public isAuthorized: boolean, public token: string) { }
+    }
+
     export class settingsModel {
         constructor(public people: number, public avgSalary: number) { }
     }
