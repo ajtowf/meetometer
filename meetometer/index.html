@@ -7,25 +7,9 @@
 </head>
 <body ng-app="app">
     <div data-role="page" ng-controller="meetingController">
-        <div data-role="popup" id="popupLogin" data-theme="a" class="ui-corner-all">
-            <form>
-                <div style="padding:10px 20px;">
-                    <span style="color: #ff0000">{{loginErrorMessage}}</span>
-                    <h3>Please sign in</h3>
-                    <label for="un" class="ui-hidden-accessible">Username:</label>
-                    <input type="text" name="user" id="un" ng-model="username" placeholder="username" data-theme="a">
-                    <label for="pw" class="ui-hidden-accessible">Password:</label>
-                    <input type="password" name="pass" id="pw" ng-model="password" placeholder="password" data-theme="a">
-                    <button ng-click="vm.login()" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Sign in</button>
-                </div>
-            </form>
-        </div>
-
-
+        
         <div data-role="header">
-            <h1>meetometer</h1>
-            <a href="#popupLogin" ng-show="!authentication.isAuthorized" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-a ui-btn-right" data-transition="pop">Sign in</a>
-            <a ng-click="vm.logout()" ng-show="authentication.isAuthorized" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-a ui-btn-right">Sign out</a>
+            <h1>meetometer</h1>            
         </div>
 
         <div role="main" class="ui-content">
@@ -71,7 +55,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/amplifyjs/1.1.0/amplify.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.js"></script>
 
-    <script src="App/app.min.js"></script>
+    <script src="App/bundle.min.js"></script>
 
     <!--<script src="App/directives.js"></script>
     <script src="App/models.js"></script>

@@ -2,6 +2,52 @@
 var meetometer;
 (function (meetometer) {
     'use strict';
+    var settingsModel = (function () {
+        function settingsModel(people, avgSalary) {
+            this.people = people;
+            this.avgSalary = avgSalary;
+        }
+        return settingsModel;
+    }());
+    meetometer.settingsModel = settingsModel;
+    var meetingModel = (function () {
+        function meetingModel(id, date, people, avgSalary, durationSeconds) {
+            this.id = id;
+            this.date = date;
+            this.people = people;
+            this.avgSalary = avgSalary;
+            this.durationSeconds = durationSeconds;
+        }
+        return meetingModel;
+    }());
+    meetometer.meetingModel = meetingModel;
+})(meetometer || (meetometer = {}));
+//# sourceMappingURL=models.js.map
+/// <reference path="_all.ts" />
+var meetometer;
+(function (meetometer) {
+    'use strict';
+    function sliderInitDirective() {
+        return {
+            link: function link(scope, element, attrs) {
+                var model = scope.$eval(attrs.ngModel);
+                var unwatch = scope.$watch(model, function (newValue) {
+                    if (newValue) {
+                        element.slider('refresh');
+                        unwatch();
+                    }
+                });
+            }
+        };
+    }
+    meetometer.sliderInitDirective = sliderInitDirective;
+    ;
+})(meetometer || (meetometer = {}));
+//# sourceMappingURL=directives.js.map
+/// <reference path="_all.ts" />
+var meetometer;
+(function (meetometer) {
+    'use strict';
     var meetingController = (function () {
         function meetingController($scope, $http, $timeout, storageService) {
             var _this = this;
@@ -75,3 +121,50 @@ var meetometer;
     meetometer.meetingController = meetingController;
 })(meetometer || (meetometer = {}));
 //# sourceMappingURL=meetingcontroller.js.map
+/// <reference path="_all.ts" />
+var meetometer;
+(function (meetometer) {
+    'use strict';
+    var storageService = (function () {
+        function storageService() {
+            this.meetometerSettingsKey = "meetometerSettingsKey";
+            this.meetometerMeetometerKey = "meetometerMeetometerKey";
+        }
+        storageService.prototype.getSettings = function () {
+            var settings = amplify.store(this.meetometerSettingsKey);
+            if (!settings) {
+                settings = { people: 5, avgSalary: 40000 };
+            }
+            return settings;
+        };
+        storageService.prototype.saveSettings = function (settings) {
+            amplify.store(this.meetometerSettingsKey, settings);
+        };
+        storageService.prototype.getMeetings = function () {
+            var meetings = amplify.store(this.meetometerMeetometerKey);
+            if (!meetings) {
+                meetings = [
+                    new meetometer.meetingModel(1, new Date(), 5, 45000, 60 * 45),
+                    new meetometer.meetingModel(2, new Date(), 20, 30000, 60 * 30)
+                ];
+            }
+            return meetings;
+        };
+        storageService.prototype.saveMeetings = function (meetings) {
+            amplify.store(this.meetometerMeetometerKey, meetings);
+        };
+        return storageService;
+    }());
+    meetometer.storageService = storageService;
+})(meetometer || (meetometer = {}));
+//# sourceMappingURL=storageservice.js.map
+/// <reference path="_all.ts" />
+var meetometer;
+(function (meetometer) {
+    'use strict';
+    angular.module("app", [])
+        .directive("sliderInit", meetometer.sliderInitDirective)
+        .service("storageService", meetometer.storageService)
+        .controller("meetingController", meetometer.meetingController);
+})(meetometer || (meetometer = {}));
+//# sourceMappingURL=main.js.map

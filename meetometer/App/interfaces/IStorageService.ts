@@ -4,9 +4,6 @@ module meetometer {
     'use strict';
 
     export interface IStorageService {
-        getAuthSettings(): authSettingsModel;
-        saveAuthSettings(settings: authSettingsModel);
-
         getSettings(): settingsModel;
         saveSettings(settings: settingsModel);
 

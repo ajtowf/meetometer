@@ -23,6 +23,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TypeScriptToolsVersion>0.9</TypeScriptToolsVersion>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -130,12 +131,7 @@
     <Content Include="App\app.min.js.map">
       <DependentUpon>app.js.bundle</DependentUpon>
     </Content>
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
+    <None Include="bundleconfig.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App\app.js">
@@ -143,6 +139,10 @@
     </Content>
     <Content Include="App\app.min.js">
       <DependentUpon>app.js.bundle</DependentUpon>
+    </Content>
+    <Content Include="App\bundle.js" />
+    <Content Include="App\bundle.min.js">
+      <DependentUpon>bundle.js</DependentUpon>
     </Content>
     <Content Include="Content\images\ajax-loader.gif" />
     <Content Include="Content\images\icons-png\action-black.png" />
@@ -366,35 +366,13 @@
     <Content Include="Scripts\jquery.mobile-1.4.0.min.js" />
     <Content Include="Scripts\MIT-LICENSE.txt" />
     <Content Include="Scripts\README.txt" />
-    <Content Include="Web.config" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Scripts\jquery.mobile-1.4.0.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\IdentityConfig.cs" />
-    <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="App_Start\Startup.Autofac.cs" />
-    <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\MeetingsController.cs" />
-    <Compile Include="Migrations\201404071558150_InitialCreate.cs" />
-    <Compile Include="Migrations\201404071558150_InitialCreate.Designer.cs">
-      <DependentUpon>201404071558150_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201409231615580_IdentityDb.cs" />
-    <Compile Include="Migrations\201409231615580_IdentityDb.Designer.cs">
-      <DependentUpon>201409231615580_IdentityDb.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Providers\ApplicationOAuthProvider.cs" />
-    <Compile Include="Repository\AppDbContext.cs" />
-    <Compile Include="Repository\Entities\Meeting.cs" />
-    <Compile Include="Repository\MeetingRepository.cs" />
-    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="App\authInterceptor.ts" />
-    <TypeScriptCompile Include="App\authService.ts" />
     <TypeScriptCompile Include="App\directives.ts" />
     <TypeScriptCompile Include="App\interfaces\IMeetingScope.ts" />
     <TypeScriptCompile Include="App\interfaces\IStorageService.ts" />
@@ -413,14 +391,6 @@
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquerymobile\jquerymobile.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201404071558150_InitialCreate.resx">
-      <DependentUpon>201404071558150_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201409231615580_IdentityDb.resx">
-      <DependentUpon>201409231615580_IdentityDb.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

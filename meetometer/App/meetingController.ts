@@ -7,18 +7,15 @@ module meetometer {
 
         private cancelPromise: ng.IPromise<any>;
 
-        public static $inject = ["$scope", "$http", "$timeout", "storageService", "authService"];
+        public static $inject = ["$scope", "$http", "$timeout", "storageService"];
 
         constructor(
             private $scope: IMeetingScope,
             private $http: ng.IHttpService,
             private $timeout: ng.ITimeoutService,
-            private storageService: IStorageService,
-            private authService: any) {
+            private storageService: IStorageService) {
 
             var settings = storageService.getSettings();
-
-            $scope.authentication = authService.authentication;
 
             $scope.loginErrorMessage = "";
             $scope.username = "test";
@@ -29,10 +26,6 @@ module meetometer {
             $scope.meetings = storageService.getMeetings();
 
             $scope.$watch("meetings", () => this.saveMeetings(), true);
-
-            if ($scope.authentication.isAuthorized) {
-                this.getMettings();
-            }
             
             $scope.$watch("people", () => this.saveSettings());
             $scope.$watch("avgSalary", () => this.saveSettings());
@@ -44,35 +37,8 @@ module meetometer {
             $scope.vm = this;
         }
 
-        getMettings() {
-            this.$http.get("/api/meetings").success((data) => {
-                this.$scope.meetings = data;
-            });
-        }
-
-        logout() {
-            this.authService.logout();
-        }
-
-        login() {
-            var _self = this;
-            // do the login
-            this.authService.login(
-                this.$scope.username,
-                this.$scope.password)
-                .then(function (response) {
-                    _self.getMettings();
-                    _self.$scope.loginErrorMessage = "";
-                    $("#popupLogin").popup("close");
-                },
-                function (response) {
-                    _self.$scope.loginErrorMessage = "Failed to login";
-                });
-        }
-
         saveSettings() {
-            this.storageService.saveSettings(
-                new settingsModel(this.$scope.people, this.$scope.avgSalary));
+            this.storageService.saveSettings(new settingsModel(this.$scope.people, this.$scope.avgSalary));
         }
 
         saveMeetings() {
@@ -114,13 +80,8 @@ module meetometer {
             if (this.$scope.running) {
                 this.stop();
             }
-
-            // post /api/meetings
-            var meetingToStore =
-                new meetingModel(0, new Date(), this.$scope.people, this.$scope.avgSalary, this.$scope.duration);
-            this.$http.post("/api/meetings", meetingToStore).success((data) => {
-                this.$scope.meetings.push(data);
-            });            
+            var meetingToStore = new meetingModel(this.$scope.meetings.length + 1, new Date(), this.$scope.people, this.$scope.avgSalary, this.$scope.duration);
+            this.$scope.meetings.push(meetingToStore);
 
             this.reset();
         }
@@ -128,9 +89,7 @@ module meetometer {
         deleteMeeting(meetingToDelete: meetingModel) {
             var index = this.$scope.meetings.indexOf(meetingToDelete);
             if (index > -1) {
-                this.$http.delete("/api/meetings?id=" + meetingToDelete.id).success(() => {
-                    this.$scope.meetings.splice(index, 1);
-                });
+                this.$scope.meetings.splice(index, 1);                
             }
         }
     }

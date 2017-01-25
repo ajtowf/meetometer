@@ -1,0 +1,12 @@
+[
+  {
+    "outputFileName": "App/bundle.js",
+    "inputFiles": [
+      "App/models.js",
+      "App/directives.js",
+      "App/meetingcontroller.js",
+      "App/storageservice.js",
+      "App/main.js"
+    ]
+  }
+]
