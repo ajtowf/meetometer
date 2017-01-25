@@ -127,19 +127,9 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App\app.js.bundle" />
-    <Content Include="App\app.min.js.map">
-      <DependentUpon>app.js.bundle</DependentUpon>
-    </Content>
     <None Include="bundleconfig.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App\app.js">
-      <DependentUpon>app.js.bundle</DependentUpon>
-    </Content>
-    <Content Include="App\app.min.js">
-      <DependentUpon>app.js.bundle</DependentUpon>
-    </Content>
     <Content Include="App\bundle.js" />
     <Content Include="App\bundle.min.js">
       <DependentUpon>bundle.js</DependentUpon>
